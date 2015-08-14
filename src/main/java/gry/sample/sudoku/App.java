@@ -115,6 +115,7 @@ public class App
 
     public static void main( String[] args )
     {
+    	long startTime = System.currentTimeMillis();
         System.out.println( "SUDOKU START:" );
         SudokuResolver resolver = new SudokuResolver();
         resolver.init(sudokuMatrix6);
@@ -123,6 +124,7 @@ public class App
         boolean resolved = resolver.resolve(resolver.getFirstPos());
         System.out.println(resolved ? "RESOLVED: " : "NOT RESOLVED: ");
         resolver.showIt();
-        System.out.println( "SUDOKU END:" );
+        long endTime = System.currentTimeMillis();
+        System.out.println(String.format("SUDOKU END  -> Duration: %d ms", endTime-startTime));
     }
 }

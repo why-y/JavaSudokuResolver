@@ -6,15 +6,18 @@ import gry.sample.sudoku.SudokuResolver.Pos;
 
 public aspect RecursionLog {
 
+	// Switch RecursionLog on/off
+	private static boolean isTraceEnabled = false;
+	
 	private int callCounter = 0;
 	private int recursionDepth = 0;
 	
 	// pointcuts
-	pointcut resolveRecursionCall(Pos pos) : 
+	pointcut resolveRecursionCall(Pos pos) : if(isTraceEnabled) &&
 		call(boolean gry.sample.sudoku.SudokuResolver.resolve(Pos))
 		&& args(pos);
 	
-	pointcut matches(int value, Pos at):
+	pointcut matches(int value, Pos at): if(isTraceEnabled) &&
 		call(boolean gry.sample.sudoku.SudokuResolver.matches(int, Pos))
 		&& args(value, at);
 	
@@ -42,8 +45,7 @@ public aspect RecursionLog {
 	
 	private String getIndentStr(int width) {
 		char[] indent = new char[width];
-		Arrays.fill(indent, '-');
-//		Arrays.fill(indent, '\u2022');
+		Arrays.fill(indent, '\u2022');
 		return new String(indent);
 	}
 }
