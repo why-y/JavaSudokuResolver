@@ -117,7 +117,7 @@ public class App
     {
         System.out.println( "SUDOKU START:" );
         SudokuResolver resolver = new SudokuResolver();
-        resolver.init(sudokuMatrix7);
+        resolver.init(sudokuMatrix6);
         System.out.println("INPUT:");
         resolver.showIt();
         boolean resolved = resolver.resolve(resolver.getFirstPos());
