@@ -7,7 +7,7 @@ import gry.sample.sudoku.SudokuResolver.Pos;
 public aspect RecursionLog {
 
 	// Switch RecursionLog on/off
-	private static boolean isTraceEnabled = false;
+	private static boolean isTraceEnabled = true;
 	
 	private int callCounter = 0;
 	private int recursionDepth = 0;
