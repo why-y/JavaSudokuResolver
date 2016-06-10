@@ -5,9 +5,8 @@ import java.util.stream.IntStream;
 public class SudokuResolver {
 
 	public static final int BLOCK_SIZE = 3;
-	public static final int FIELD_WIDTH = BLOCK_SIZE * BLOCK_SIZE;
-	
-	public static final int ROWS = BLOCK_SIZE*3; // each block has 3 rows
+
+	public static final int ROWS = BLOCK_SIZE * 3; // each block has 3 rows
 	public static final int COLUMNS = ROWS; // the sudoku is always a square
 	
 	private int[][] matrix;
@@ -15,25 +14,32 @@ public class SudokuResolver {
 	public void init(int[][] unresolvedMatrix) {
 		matrix = unresolvedMatrix;
 	}
-	
-	
-	public boolean resolve(final Position position) {
-		if(position==null) {
+
+	public boolean resolveIt() {
+		Position position = getFirstFreePosition();
+		if (position == null) {
 			return true;
 		}
+		return resolve(position);
+	}
+
+	/**
+	 * Recursive resolve method
+	 * @param position
+	 * @return
+     */
+	private boolean resolve(final Position position) {
 		for (int value=1; value<=9; ++value) {
 			if (isUnique(value, position)){
-				setValueAt(value, position);				
-				if(resolve(getNextFreePosition(position))) {
-					// completed
+				setValueAt(value, position);
+				Position nextPosition = getNextFreePosition(position);
+				if(nextPosition == null || resolve(nextPosition)) {
 					return true;
 				}
-				else {
-					setValueAt(0, position);
-				}
+				setValueAt(0, position);
 			}
 		}
-		// not yet resolved
+		// no value matches on this position -> Roll back.
 		return false;
 	}
 
@@ -69,11 +75,16 @@ public class SudokuResolver {
 		return new Position(position.getX()/BLOCK_SIZE, position.getY()/BLOCK_SIZE);
 	}
 		
-	public Position getFirstFreePosition() {
+	private Position getFirstFreePosition() {
 		Position firstPosition = new Position(0, 0);
 		return getValueAt(firstPosition)==0 ? firstPosition : getNextFreePosition(firstPosition);
 	}
 
+	/**
+	 * Returns the next Position in the matrix, which contains '0', or null if there isn't a '0' anymore (i.e. resolved).
+	 * @param position
+	 * @returns
+     */
 	private Position getNextFreePosition(final Position position) {
 		Position nextPosition = position;
 		while((nextPosition = nextPosition.increment()) != null && getValueAt(nextPosition)!=0) {};
@@ -87,23 +98,22 @@ public class SudokuResolver {
 	private void setValueAt(int val, final Position pos) {
 		matrix[pos.getY()][pos.getX()] = val;
 	}
-	
-	
-	
-	public void showIt() {
-		for (int y = 0; y < FIELD_WIDTH; y++) {
-			for (int x = 0; x < FIELD_WIDTH; x++) {
-				System.out.print(matrix[y][x]+ " ");
-				if (x % BLOCK_SIZE == 2) {
-					System.out.print(" ");
-				}
-			}
-			if (y % BLOCK_SIZE == 2) {
-				System.out.println();
-			}
-			System.out.println();
-		}		
+
+	public String getMatrixAsNiceString() {
+		StringBuilder matrixStringBuilder = new StringBuilder();
+		IntStream.range(0, ROWS).forEach(y -> matrixStringBuilder
+				.append(getRowAsNiceString(y))
+				.append(System.lineSeparator())
+				.append(y % BLOCK_SIZE == 2 ? System.lineSeparator() : ""));
+		return matrixStringBuilder.toString();
 	}
 
+	private String getRowAsNiceString(int y) {
+		StringBuilder rowStringBuilder = new StringBuilder();
+		IntStream.range(0, COLUMNS).forEach(x -> rowStringBuilder
+				.append(matrix[y][x])
+				.append(x % BLOCK_SIZE == 2 ? "  " : " "));
+		return rowStringBuilder.toString();
+	}
 
 }
