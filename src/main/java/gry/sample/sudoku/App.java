@@ -121,7 +121,7 @@ public class App
         resolver.init(sudokuMatrix7);
         System.out.println("INPUT:");
         resolver.showIt();
-        boolean resolved = resolver.resolve(resolver.getFirstPos());
+        boolean resolved = resolver.resolve(resolver.getFirstFreePosition());
         System.out.println(resolved ? "RESOLVED: " : "NOT RESOLVED: ");
         resolver.showIt();
         long endTime = System.currentTimeMillis();
