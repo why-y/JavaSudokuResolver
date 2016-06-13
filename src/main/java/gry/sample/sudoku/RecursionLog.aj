@@ -12,11 +12,11 @@ public aspect RecursionLog {
 	
 	// pointcuts
 	pointcut resolveRecursionCall(Position pos) : if(isTraceEnabled) &&
-		call(boolean gry.sample.sudoku.SudokuResolver.resolve(Pos))
+		call(boolean gry.sample.sudoku.SudokuResolver.resolve(Position))
 		&& args(pos);
 	
 	pointcut matches(int value, Position at): if(isTraceEnabled) &&
-		call(boolean gry.sample.sudoku.SudokuResolver.matches(int, Pos))
+		call(boolean gry.sample.sudoku.SudokuResolver.isUnique(int, Position))
 		&& args(value, at);
 	
 	// advices
@@ -34,11 +34,11 @@ public aspect RecursionLog {
 	}
 
 	before(int value, Position at): matches(value, at) {
-		System.out.print(String.format("%s\u2502 Value %d ... ", getIndentStr(recursionDepth), value));		
+		System.out.print(String.format("%s\u2502 Check value %d ... ", getIndentStr(recursionDepth), value));		
 	}
 
 	after(int value, Position at) returning (boolean ret): matches(value, at) {
-		System.out.println(ret ? "matches, HURRAY!!!" : "doesn't match!");
+		System.out.println(ret ? "OK! IS UNIQUE!" : "is not unique!");
 	}
 	
 	private String getIndentStr(int width) {
