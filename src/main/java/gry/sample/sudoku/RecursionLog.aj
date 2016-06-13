@@ -38,7 +38,7 @@ public aspect RecursionLog {
 	}
 
 	after(int value, Position at) returning (boolean ret): matches(value, at) {
-		System.out.println(ret ? "OK! IS UNIQUE!" : "is not unique!");
+		System.out.println(ret ? "OK! Matches!" : "alredy exists!");
 	}
 	
 	private String getIndentStr(int width) {
