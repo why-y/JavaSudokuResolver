@@ -2,10 +2,8 @@ package gry.sample.sudoku;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
 import static org.hamcrest.CoreMatchers.*;
 
-import static org.junit.Assert.*;
 
 /**
  * Created by gry on 10.06.16.
@@ -25,7 +23,7 @@ public class SudokuResolverTest {
             {6,0,0, 0,2,0, 8,0,0},
             {0,8,4, 0,6,0, 0,1,0}
     };
-    private static final String RESULT = new StringBuilder()
+    private static final String EXPECTED_RESULT = new StringBuilder()
             .append("1 3 2  8 9 6  7 5 4  ").append(System.lineSeparator())
             .append("5 6 9  1 7 4  3 2 8  ").append(System.lineSeparator())
             .append("8 2 3  6 1 5  4 9 7  ").append(System.lineSeparator())
@@ -45,7 +43,7 @@ public class SudokuResolverTest {
         testee.init(testData);
         testee.resolveIt();
         String resultString = testee.getMatrixAsNiceString();
-        assertThat(resultString, equalTo(RESULT));
+        assertThat(resultString, equalTo(EXPECTED_RESULT));
     }
 
 }

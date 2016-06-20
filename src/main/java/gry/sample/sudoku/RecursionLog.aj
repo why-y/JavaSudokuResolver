@@ -24,21 +24,21 @@ public aspect RecursionLog {
 		callCounter++;
 		recursionDepth++;
 		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
-		System.out.println(String.format("%s%s ENTER resolve(%s): callCounter:%d", getIndentStr(recursionDepth-1), enterSymbol, pos, callCounter));
+		System.out.println(String.format("%s%s Resolve %s  (call # %d)", getIndentStr(recursionDepth-1), enterSymbol, pos, callCounter));
 	}
 	
 	after(Position pos): resolveRecursionCall(pos) {
 		String exitSymbol = recursionDepth>1 ? "\u250c\u2518" : "\u2500\u2518";
-		System.out.println(String.format("%s%s EXIT   resolve(%s): returned!", getIndentStr(recursionDepth-1), exitSymbol, pos));
+		System.out.println(String.format("%s%s Done with %s", getIndentStr(recursionDepth-1), exitSymbol, pos));
 		recursionDepth--;
 	}
 
 	before(int value, Position at): matches(value, at) {
-		System.out.print(String.format("%s\u2502 Check value %d ... ", getIndentStr(recursionDepth), value));		
+		System.out.print(String.format("%s\u2502  %d \u2192  ", getIndentStr(recursionDepth), value));		
 	}
 
 	after(int value, Position at) returning (boolean ret): matches(value, at) {
-		System.out.println(ret ? "OK! Matches!" : "alredy exists!");
+		System.out.println(ret ? "OK!" : "ambiguous!");
 	}
 	
 	private String getIndentStr(int width) {
