@@ -24,7 +24,7 @@ public aspect RecursionLog {
 		callCounter++;
 		recursionDepth++;
 		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
-		System.out.println(String.format("%s%s Resolve %s  (call # %d)", getIndentStr(recursionDepth-1), enterSymbol, pos, callCounter));
+		System.out.println(String.format("%s%s Resolve %s  #%d", getIndentStr(recursionDepth-1), enterSymbol, pos, callCounter));
 	}
 	
 	after(Position pos): resolveRecursionCall(pos) {

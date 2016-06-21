@@ -46,8 +46,8 @@ public class SudokuResolver {
 	}
 	
 	private boolean isUnique(int value, final Position pos) {
-		return isUniqueInRow(value, pos.getY()) && 
-				isUniqueInColumn(value, pos.getX()) && 
+		return isUniqueInRow(value, pos.getRow()) && 
+				isUniqueInColumn(value, pos.getColumn()) && 
 				isUniqueInBlock(value, pos);
 	}
 	
@@ -68,13 +68,13 @@ public class SudokuResolver {
 	}
 	
 	private boolean isUniqueInBlockRow(int value, final Position blockPosition, int blockRow) {
-		int row = blockPosition.getY()*BLOCK_SIZE + blockRow;
+		int row = blockPosition.getRow()*BLOCK_SIZE + blockRow;
 		return !IntStream.range(0, BLOCK_SIZE)
-				.anyMatch(blockColumn->value==matrix[row][blockPosition.getX()*BLOCK_SIZE + blockColumn]);		
+				.anyMatch(blockColumn->value==matrix[row][blockPosition.getColumn()*BLOCK_SIZE + blockColumn]);		
 	}
 	
 	private Position getBlockPositionFor(final Position position) {
-		return new Position(position.getX()/BLOCK_SIZE, position.getY()/BLOCK_SIZE);
+		return new Position(position.getRow()/BLOCK_SIZE, position.getColumn()/BLOCK_SIZE);
 	}
 		
 	private Position getFirstFreePosition() {
@@ -94,11 +94,11 @@ public class SudokuResolver {
 	}
 	
 	private int getValueAt(final Position position) {
-		return matrix[position.getY()][position.getX()];
+		return matrix[position.getRow()][position.getColumn()];
 	}
 	
 	private void setValueAt(int val, final Position position) {
-		matrix[position.getY()][position.getX()] = val;
+		matrix[position.getRow()][position.getColumn()] = val;
 	}
 	
 	private void resetValueAt(final Position position) {
