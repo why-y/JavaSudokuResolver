@@ -4,18 +4,21 @@ import java.util.Arrays;
 
 public aspect RecursionLog {
 
-	// Switch RecursionLog on/off
-	private static boolean isTraceEnabled = true;
+	// Enable or disable the recursion trace log
+	// !! BE AWARE !!!
+	// Enabling the trace log dramatically slows down
+	// the algorithm.
+	private static boolean ENABLED = true;
 	
 	private int callCounter = 0;
 	private int recursionDepth = 0;
 	
 	// pointcuts
-	pointcut resolveRecursionCall(Position pos) : if(isTraceEnabled) &&
+	pointcut resolveRecursionCall(Position pos) : if(ENABLED) &&
 		call(boolean gry.sample.sudoku.SudokuResolver.resolve(Position))
 		&& args(pos);
 	
-	pointcut matches(int value, Position at): if(isTraceEnabled) &&
+	pointcut matches(int value, Position at): if(ENABLED) &&
 		call(boolean gry.sample.sudoku.SudokuResolver.isUnique(int, Position))
 		&& args(value, at);
 	
