@@ -12,7 +12,7 @@ public class App
     	long startTime = System.currentTimeMillis();
         System.out.println( "SUDOKU START:" );
 		SudokuResolver resolver = new SudokuResolver();
-        resolver.init(Sample.difficult2);
+        resolver.init(Sample.intermediate1);
         System.out.println("INPUT:");
 		System.out.println(resolver.getMatrixAsNiceString());
         boolean resolved = resolver.resolveIt();
