@@ -20,7 +20,7 @@ public class Position{
 		return column;
 	}
 	
-	public Position increment() {
+	public Position getNextPosition() {
 		if (isLastPosition()) return null;
 		return isInLastColumn() ? 
 				new Position(row + 1, 0) : // reset column to 0 and increment row
@@ -41,7 +41,7 @@ public class Position{
 	
 	@Override
 	public String toString() {
-		return String.format("Pos[%d-%d]", row, column);
+		return String.format("[%d-%d]", row, column);
 	}
 	
 }

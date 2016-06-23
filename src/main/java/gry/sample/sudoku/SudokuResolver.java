@@ -1,6 +1,9 @@
 package gry.sample.sudoku;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class SudokuResolver {
 
@@ -16,11 +19,34 @@ public class SudokuResolver {
 	}
 
 	public boolean resolveIt() {
-		Position position = getFirstFreePosition();
-		if (position == null) {
+		// 1) Values which are distinct can easily be filled in advance.
+		//    This step is optional!
+//		fillDistinctValues();
+		
+		// 2) Start resolve recursion for the open positions
+		Position firstFreePosition = getFirstFreePosition();
+		if (firstFreePosition == null) {
 			return true;
 		}
-		return resolve(position);
+		return resolve(firstFreePosition);
+	}
+	
+	private void fillDistinctValues() {
+		getEachFreePosition().forEach(pos -> {
+			List<Integer> matchingValues = getMatchingValues(pos);
+			if(matchingValues.size()==1) {
+				setValueAt(matchingValues.get(0), pos);
+			}
+		});		
+	}
+	
+	private Stream<Position> getEachFreePosition() {
+		return getEachPosition().filter(pos -> getValueAt(pos)==0);
+	}
+	
+	private Stream<Position> getEachPosition() {
+    	return IntStream.range(0, ROWS).boxed()
+    			.flatMap(row -> IntStream.range(0, COLUMNS).mapToObj(column -> new Position(row, column)));
 	}
 
 	/**
@@ -29,22 +55,26 @@ public class SudokuResolver {
 	 * @return
      */
 	private boolean resolve(final Position position) {
-		for (int value=1; value<=9; ++value) {
-			if (isUnique(value, position)) {
-				setValueAt(value, position);
-				Position nextPosition = getNextFreePosition(position);
-				if(nextPosition == null || resolve(nextPosition)) {
-					return true;
-				}
-				else {
-					resetValueAt(position);
-				}
+		
+		for (Integer matchingValue : getMatchingValues(position)) {
+			setValueAt(matchingValue, position);
+			if(!hasNextFreePosition(position) || resolve(getNextFreePosition(position))) {
+				return true; // Resolved!!
+			}
+			else {
+				resetValueAt(position);
 			}
 		}
-		// no value matches on this position -> Roll back.
-		return false;
+		return false; // step back
 	}
-	
+
+	private List<Integer> getMatchingValues(Position position) {		
+		return IntStream.range(0, 10)
+				.filter(value -> isUnique(value, position))
+				.boxed()
+				.collect(Collectors.toList());
+	}	
+
 	private boolean isUnique(int value, final Position pos) {
 		return isUniqueInRow(value, pos.getRow()) && 
 				isUniqueInColumn(value, pos.getColumn()) && 
@@ -77,19 +107,23 @@ public class SudokuResolver {
 		return new Position(position.getRow()/BLOCK_SIZE, position.getColumn()/BLOCK_SIZE);
 	}
 		
+	private boolean hasNextFreePosition(final Position startPosition) {
+		return getNextFreePosition(startPosition)!=null;
+	}
+	
 	private Position getFirstFreePosition() {
 		Position firstPosition = new Position(0, 0);
 		return getValueAt(firstPosition)==0 ? firstPosition : getNextFreePosition(firstPosition);
 	}
 
 	/**
-	 * Returns the next Position in the matrix, which contains '0', or null if there isn't a '0' anymore (i.e. resolved).
+	 * Returns the next Position in the matrix, which contains '0', or null if there isn't a '0' anymore.
 	 * @param position
 	 * @returns
      */
 	private Position getNextFreePosition(final Position position) {
 		Position nextPosition = position;
-		while((nextPosition = nextPosition.increment()) != null && getValueAt(nextPosition)!=0) {};
+		while((nextPosition = nextPosition.getNextPosition()) != null && getValueAt(nextPosition)!=0) {};
 		return nextPosition;
 	}
 	
