@@ -15,7 +15,9 @@ version = '1.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext.aspectjVersion = '1.8.4'
+project.ext {
+    aspectjVersion = "1.8.4"
+}
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
@@ -31,17 +33,22 @@ task fatJar(type: Jar) {
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    // Use 'jcenter' for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-//    jcenter()
 	mavenCentral()
 }
 
+configurations {
+    ajc
+    aspects
+    aspectCompile
+    compile{
+        extendsFrom aspects
+    }
+}
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-	compile "org.aspectj:aspectjrt:$aspectjVersion"
-	compile "org.aspectj:aspectjweaver:$aspectjVersion"
+	compile "org.aspectj:aspectjrt:${aspectjVersion}"
+	compile "org.aspectj:aspectjweaver:${aspectjVersion}"
 
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.12'

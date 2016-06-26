@@ -30,19 +30,21 @@ public class SudokuResolver {
      */
 	private boolean resolve(final Position position) {
 		for (int value=1; value<=9; ++value) {
-			if (isUnique(value, position)){
+			if (isUnique(value, position)) {
 				setValueAt(value, position);
 				Position nextPosition = getNextFreePosition(position);
 				if(nextPosition == null || resolve(nextPosition)) {
 					return true;
 				}
-				setValueAt(0, position);
+				else {
+					resetValueAt(position);
+				}
 			}
 		}
 		// no value matches on this position -> Roll back.
 		return false;
 	}
-
+	
 	private boolean isUnique(int value, final Position pos) {
 		return isUniqueInRow(value, pos.getY()) && 
 				isUniqueInColumn(value, pos.getX()) && 
@@ -91,12 +93,16 @@ public class SudokuResolver {
 		return nextPosition;
 	}
 	
-	private int getValueAt(final Position pos) {
-		return matrix[pos.getY()][pos.getX()];
+	private int getValueAt(final Position position) {
+		return matrix[position.getY()][position.getX()];
 	}
 	
-	private void setValueAt(int val, final Position pos) {
-		matrix[pos.getY()][pos.getX()] = val;
+	private void setValueAt(int val, final Position position) {
+		matrix[position.getY()][position.getX()] = val;
+	}
+	
+	private void resetValueAt(final Position position) {
+		setValueAt(0, position);
 	}
 
 	public String getMatrixAsNiceString() {
