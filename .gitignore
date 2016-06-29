@@ -1,8 +1,12 @@
 /.gradle/
+/gradle/
+/gradlew
+/gradlew.bat
 /.settings/
 /build/
 /bin/
 /.classpath
 /.project
+/.idea/
 /dependency-reduced-pom.xml
 /target/

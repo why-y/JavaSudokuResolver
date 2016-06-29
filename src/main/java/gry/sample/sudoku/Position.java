@@ -3,15 +3,19 @@ package gry.sample.sudoku;
 /**
  * Represents the Position within the sudoku [column, row]
  */
-public class Position{
+public class Position implements Comparable<Position> {
 	int row;
 	int column; 
 	
-	public Position(int row, int column) {
+	private Position(int row, int column) {
 		this.row = row;			
 		this.column = column;
 	}
-	
+
+	static public Position at(Integer row, Integer column) {
+		return new Position(row, column);
+	}
+
 	public int getRow() {
 		return row;
 	}
@@ -32,41 +36,40 @@ public class Position{
 	}
 
 	private boolean isInLastRow(){
-		return row == SudokuResolver.ROWS-1;
+		return row == Matrix.ROWS-1;
 	}
 
 	private boolean isInLastColumn(){
-		return column == SudokuResolver.COLUMNS-1;
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + column;
-		result = prime * result + row;
-		return result;
+		return column == Matrix.COLUMNS-1;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Position other = (Position) obj;
-		if (column != other.column)
-			return false;
-		if (row != other.row)
-			return false;
-		return true;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Position position = (Position) o;
+
+		if (row != position.row) return false;
+		return column == position.column;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = row;
+		result = 31 * result + column;
+		return result;
 	}
 
 	@Override
 	public String toString() {
 		return String.format("[%d-%d]", row, column);
 	}
-	
+
+	@Override
+	public int compareTo(Position other) {
+		return (this.getRow()*1000 + this.getColumn())
+				- (other.getRow()*1000 + other.getColumn());
+	}
 }
