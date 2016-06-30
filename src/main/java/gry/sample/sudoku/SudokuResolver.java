@@ -12,7 +12,7 @@ public class SudokuResolver {
     public static final SudokuResolver getInstance() {
         return theInstance;
     }
-
+    
     public Optional<Matrix> resolve(Matrix matrix) {
         Optional<Position> nextFreePosition = matrix.getNextUnresolvedPosition();
         if(!nextFreePosition.isPresent()) {

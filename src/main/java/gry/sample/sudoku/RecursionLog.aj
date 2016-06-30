@@ -32,12 +32,17 @@ public aspect RecursionLog {
 		callCounter++;
 		recursionDepth++;
 		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
-		System.out.println(String.format("%s%s Resolve Matrix  #%d", getIndentStr(recursionDepth-1), enterSymbol, callCounter));
+		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, matrix.streamUnresolvedPositions().count(), callCounter));
 	}
 	
 	after(Matrix matrix) : recursionCall(matrix) {
 		String exitSymbol = recursionDepth>1 ? "\u250c\u2518" : "\u2500\u2518";
-		System.out.println(String.format("%s%s Done", getIndentStr(recursionDepth-1), exitSymbol));
+		if(matrix.streamUnresolvedPositions().count()==0) {
+			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(recursionDepth-1), exitSymbol));
+		}
+		else {
+			System.out.println(String.format("%s%s Roll back", getIndentStr(recursionDepth-1), exitSymbol));
+		}
 		recursionDepth--;
 	}
 

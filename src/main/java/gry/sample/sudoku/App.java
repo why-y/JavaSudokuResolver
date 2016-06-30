@@ -2,6 +2,7 @@ package gry.sample.sudoku;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Test the SudokuResolver
@@ -14,14 +15,21 @@ public class App
     {
         Instant start = Instant.now();
         System.out.println( "SUDOKU START:" );
-//		SudokuResolver resolver = new SudokuResolver();
-////        resolver.init(Sample.difficult2); // Sample.difficult2 call resolve() 10'377'895 times
-//		resolver.init(Sample.almostResolved);
-//        System.out.println("INPUT:");
-//		System.out.println(resolver.getMatrixAsNiceString();
-//        boolean resolved = resolver.resolveIt();
-//        System.out.println(resolved ? "RESOLVED: " : "NOT RESOLVED: ");
-//		System.out.println(resolver.getMatrixAsNiceString());
+        
+        Matrix unresolved = Matrix.load(Sample.almostResolved);
+//        Matrix unresolved = Matrix.load(Sample.difficult2);
+        System.out.println("INPUT:");
+		System.out.println(unresolved.toFormatedString());
+		
+        Optional<Matrix> resolved = SudokuResolver.getInstance().resolve(unresolved);
+        
+        if(resolved.isPresent()) {
+        	System.out.println("RESOLVED!");
+        	System.out.println(resolved.get().toFormatedString());
+        }
+        else{
+        	System.err.println("UNRESOLVABLE!!!");
+        }
         Instant stop = Instant.now();
         System.out.println(String.format("SUDOKU END  -> %s", Duration.between(start, stop)));
     }
