@@ -3,6 +3,7 @@ package gry.sample.sudoku;
 import gry.sample.sudoku.matrix.Matrix;
 import gry.sample.sudoku.matrix.Position;
 import gry.sample.sudoku.matrix.Sample;
+import gry.sample.sudoku.matrix.Value;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -57,7 +58,7 @@ public class SudokuResolverTest {
     @Test
     public void testUnresolvableMatrix() {
         Matrix matrixToSoMatrix = Matrix.load(Sample.almostResolved);
-        matrixToSoMatrix.setValueAt(7, Position.at(8,7));
+        matrixToSoMatrix.setValueAt(Value.SEVEN, Position.at(8,7));
         Optional<Matrix> result = SudokuResolver.getInstance()
                 .resolve(matrixToSoMatrix);
         assertThat(result.isPresent(), is(false));

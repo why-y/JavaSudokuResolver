@@ -43,8 +43,8 @@ public class MatrixTest {
     @Test
     public void testGetValueAtValidPosition() {
     	Matrix testee = Matrix.load(Sample.almostResolved);
-    	assertThat(testee.getValueAt(Position.at(0, 0)).get(), is(3));
-    	assertThat(testee.getValueAt(Position.at(4, 4)).get(), is(5));
+    	assertThat(testee.getValueAt(Position.at(0, 0)).get(), is(Value.THREE));
+    	assertThat(testee.getValueAt(Position.at(4, 4)).get(), is(Value.FIVE));
     	assertThat(testee.getValueAt(Position.at(8, 8)).isPresent(), is(false));
     }
     
@@ -52,7 +52,7 @@ public class MatrixTest {
     public void testGetValueAtInvalidPosition() {
     	Matrix.load(Sample.almostResolved).getValueAt(Position.at(0, 9));
     }
-    
+
     @Test
     public void testGetEachFreePosition() {
 		System.out.println(Matrix.load(Sample.almostResolved).toString());
@@ -80,7 +80,7 @@ public class MatrixTest {
     public void testClone() {
 		Matrix matrix = Matrix.load(Sample.simpliest);
     	Matrix clone = matrix.clone();
-		clone.setValueAt(0, Position.at(0,0));
+		clone.setValueAt(Value.EMPTY, Position.at(0,0));
 		assertThat(clone, not(equalTo(matrix)));
     }
     
