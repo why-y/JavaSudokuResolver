@@ -15,21 +15,21 @@ public class App
     {
         Instant start = Instant.now();
         System.out.println( "SUDOKU START:" );
-        Matrix unsolvedMatrix = Matrix.load(Sample.difficult1);
-//        Matrix unsolvedMatrix = Matrix.load(Sample.difficult2); // Sample.difficult2 call resolve() 10'377'895 times
-
+        
+        Matrix unresolved = Matrix.load(Sample.almostResolved);
+//        Matrix unresolved = Matrix.load(Sample.difficult2);
         System.out.println("INPUT:");
-		System.out.println(unsolvedMatrix.toFormatedString());
-
-        Optional<Matrix> resolvedMatrix = SudokuResolver.getInstance().resolve(unsolvedMatrix);
-
-        if(resolvedMatrix.isPresent()) {
-            System.out.println("RESOLVED:\n" + resolvedMatrix.get().toFormatedString());
+		System.out.println(unresolved.toFormatedString());
+		
+        Optional<Matrix> resolved = SudokuResolver.getInstance().resolve(unresolved);
+        
+        if(resolved.isPresent()) {
+        	System.out.println("RESOLVED!");
+        	System.out.println(resolved.get().toFormatedString());
         }
-        else {
-            System.out.println("UNRESOLVED!");
+        else{
+        	System.err.println("UNRESOLVABLE!!!");
         }
-
         Instant stop = Instant.now();
         System.out.println(String.format("SUDOKU END  -> %s", Duration.between(start, stop)));
     }

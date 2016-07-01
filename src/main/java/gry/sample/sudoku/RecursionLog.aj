@@ -1,6 +1,7 @@
 package gry.sample.sudoku;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public aspect RecursionLog {
 
@@ -14,29 +15,34 @@ public aspect RecursionLog {
 	private int recursionDepth = 0;
 	
 	// pointcuts
-	pointcut resolveRecursionCall(Position pos) : if(ENABLED) 
-		&& call(boolean gry.sample.sudoku.SudokuResolver.resolve(Position))
-		&& args(pos);
+	pointcut recursionCall(Matrix matrix) : if(ENABLED) 
+		&& call(Optional<Matrix> SudokuResolver.resolve(Matrix))
+		&& args(matrix);
 	
 	pointcut matches(int value, Position at): if(false) 
-		&& call(boolean gry.sample.sudoku.SudokuResolver.isUnique(int, Position))
+		&& call(boolean Matrix.isUnique(int, Position))
 		&& args(value, at);
 	
 	pointcut setValueAt(int value, final Position at) : if(ENABLED) 
-		&& call(void gry.sample.sudoku.SudokuResolver.setValueAt(int, Position ))
+		&& call(void Matrix.setValueAt(int, Position))
 		&& args(value, at);
 		
 	// advices
-	before(Position pos) : resolveRecursionCall(pos) {
+	before(Matrix matrix) : recursionCall(matrix) {
 		callCounter++;
 		recursionDepth++;
 		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
-		System.out.println(String.format("%s%s Resolve Position%s  #%d", getIndentStr(recursionDepth-1), enterSymbol, pos, callCounter));
+		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, matrix.streamUnresolvedPositions().count(), callCounter));
 	}
 	
-	after(Position pos) : resolveRecursionCall(pos) {
+	after(Matrix matrix) : recursionCall(matrix) {
 		String exitSymbol = recursionDepth>1 ? "\u250c\u2518" : "\u2500\u2518";
-		System.out.println(String.format("%s%s Done with %s", getIndentStr(recursionDepth-1), exitSymbol, pos));
+		if(matrix.streamUnresolvedPositions().count()==0) {
+			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(recursionDepth-1), exitSymbol));
+		}
+		else {
+			System.out.println(String.format("%s%s Roll back", getIndentStr(recursionDepth-1), exitSymbol));
+		}
 		recursionDepth--;
 	}
 
