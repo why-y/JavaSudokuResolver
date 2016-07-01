@@ -16,8 +16,8 @@ public class App
         Instant start = Instant.now();
         System.out.println( "SUDOKU START:" );
         
-        Matrix unresolved = Matrix.load(Sample.almostResolved);
-//        Matrix unresolved = Matrix.load(Sample.difficult2);
+//        Matrix unresolved = Matrix.load(Sample.almostResolved);
+        Matrix unresolved = Matrix.load(Sample.difficult2);
         System.out.println("INPUT:");
 		System.out.println(unresolved.toFormatedString());
 		

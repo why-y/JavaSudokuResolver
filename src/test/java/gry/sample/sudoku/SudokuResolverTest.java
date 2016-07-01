@@ -2,11 +2,10 @@ package gry.sample.sudoku;
 
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Ignore;
-
 
 /**
  * Created by gry on 10.06.16.
@@ -34,7 +33,7 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveSimpliest() {
-        Matrix matrixToSolve = Matrix.load(Sample.simpliest).clone();
+        Matrix matrixToSolve = Matrix.load(Sample.simpliest);
 
         Matrix result = SudokuResolver.getInstance()
                 .resolve(matrixToSolve).orElse(null);
@@ -44,12 +43,20 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveVerySimple() {
-        Matrix matrixToSolve = Matrix.load(Sample.almostResolved).clone();
+        Matrix matrixToSolve = Matrix.load(Sample.almostResolved);
 
         Matrix result = SudokuResolver.getInstance()
                 .resolve(matrixToSolve).orElse(null);
         assertThat(result, is(notNullValue()));
         assertThat(result, equalTo(EXPECTED));
     }
-    
+
+    @Test
+    public void testUnresolvableMatrix() {
+        Matrix matrixToSoMatrix = Matrix.load(Sample.almostResolved);
+        matrixToSoMatrix.setValueAt(7, Position.at(8,7));
+        Optional<Matrix> result = SudokuResolver.getInstance()
+                .resolve(matrixToSoMatrix);
+        assertThat(result.isPresent(), is(false));
+    }
 }
