@@ -1,4 +1,4 @@
-package gry.sample.sudoku;
+package gry.sample.sudoku.matrix;
 
 public class Sample {
 

@@ -1,4 +1,4 @@
-package gry.sample.sudoku;
+package gry.sample.sudoku.matrix;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Position;
+import gry.sample.sudoku.matrix.Sample;
 import org.junit.Test;
 
 

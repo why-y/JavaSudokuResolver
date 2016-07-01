@@ -1,4 +1,4 @@
-package gry.sample.sudoku;
+package gry.sample.sudoku.matrix;
 
 /**
  * Represents the Position within the sudoku [column, row]
@@ -8,8 +8,8 @@ public class Position implements Comparable<Position> {
 	int column; 
 	
 	private Position(int row, int column) {
-		this.row = row;			
-		this.column = column;
+		this.row = validated(row);
+		this.column = validated(column);
 	}
 
 	static public Position at(Integer row, Integer column) {
@@ -41,6 +41,17 @@ public class Position implements Comparable<Position> {
 
 	private boolean isInLastColumn(){
 		return column == Matrix.COLUMNS-1;
+	}
+
+	private int validated(int index) {
+		if(index < 0) {
+			throw new IllegalArgumentException("Values for Position must be positive!");
+		}
+		// same limits for rows and columns
+		if(index > Matrix.ROWS-1) {
+			throw new IndexOutOfBoundsException(String.format("Position value exceeded limit! Got:%d, allowded:0..8)", index));
+		}
+		return index;
 	}
 
 	@Override

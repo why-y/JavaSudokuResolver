@@ -1,5 +1,8 @@
 package gry.sample.sudoku;
 
+import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Position;
+
 import java.util.List;
 import java.util.Optional;
 

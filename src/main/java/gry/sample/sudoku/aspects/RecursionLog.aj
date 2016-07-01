@@ -1,7 +1,11 @@
-package gry.sample.sudoku;
+package gry.sample.sudoku.aspects;
+
+import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Position;
+import java.util.Optional;
+import gry.sample.sudoku.SudokuResolver;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 public aspect RecursionLog {
 
@@ -15,11 +19,11 @@ public aspect RecursionLog {
 	private int recursionDepth = 0;
 	
 	// pointcuts
-	pointcut recursionCall(Matrix matrix) : if(ENABLED) 
+	pointcut recursionCall(Matrix matrix) : if(ENABLED)
 		&& call(Optional<Matrix> SudokuResolver.resolve(Matrix))
 		&& args(matrix);
 	
-	pointcut matches(int value, Position at): if(false) 
+	pointcut matches(int value, Position at): if(false)
 		&& call(boolean Matrix.isUnique(int, Position))
 		&& args(value, at);
 	
