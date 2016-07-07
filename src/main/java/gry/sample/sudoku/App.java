@@ -6,6 +6,7 @@ import gry.sample.sudoku.matrix.Sample;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Test the SudokuResolver
@@ -16,12 +17,23 @@ public class App
 
     public static void main( String[] args )
     {
+    	
+    	Sample sample;
+    	try {
+    		sample = parseArguments(args);    		
+    	}
+    	catch(Throwable t) {
+    		System.err.println(String.format("You must provide exactly one argument!\n"
+    				+ "Supported values are:"));
+    		Stream.of(Sample.values()).forEach(s -> System.err.print(s.toString() + ", "));
+    		System.err.println(System.lineSeparator());
+    		return;
+    	}
+    	
         Instant start = Instant.now();
         System.out.println( "SUDOKU START:" );
         
-//        Sudoku unresolved = Sudoku.load(Sample.almostResolved);
-//        Sudoku unresolved = Sudoku.load(Sample.intermediate2);
-        Sudoku unresolved = Sudoku.load(Sample.difficult2);
+        Sudoku unresolved = Sudoku.load(sample.getMatrix());
         System.out.println("INPUT:");
 		System.out.println(unresolved.toFormatedString());
 		
@@ -36,5 +48,12 @@ public class App
         }
         Instant stop = Instant.now();
         System.out.println(String.format("SUDOKU END  -> %s", Duration.between(start, stop)));
+    }
+    
+    private static Sample parseArguments(String[] args) {
+    	if(args.length!=1) {
+    		throw new IllegalArgumentException();
+    	}
+   		return Sample.valueOf(args[0]);
     }
 }

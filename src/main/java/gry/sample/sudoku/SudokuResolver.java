@@ -20,6 +20,7 @@ public class SudokuResolver {
     public Optional<Sudoku> resolve(Sudoku sudoku) {
         Optional<Position> nextFreePosition = sudoku.getNextUnresolvedPosition();
         if(!nextFreePosition.isPresent()) {
+        	// all Positions are solved! -> DONE!
             return Optional.of(sudoku);
         }
         Position position = nextFreePosition.get();

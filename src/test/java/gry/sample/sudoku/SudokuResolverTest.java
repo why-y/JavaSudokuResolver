@@ -37,7 +37,7 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveSimpliest() {
-        Sudoku matrixToSolve = Sudoku.load(Sample.simpliest);
+        Sudoku matrixToSolve = Sudoku.load(Sample.SIMPLIEST.getMatrix());
 
         Sudoku result = SudokuResolver.getInstance()
                 .resolve(matrixToSolve).orElse(null);
@@ -47,7 +47,7 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveVerySimple() {
-        Sudoku matrixToSolve = Sudoku.load(Sample.almostResolved);
+        Sudoku matrixToSolve = Sudoku.load(Sample.SIMPLIEST.getMatrix());
 
         Sudoku result = SudokuResolver.getInstance()
                 .resolve(matrixToSolve).orElse(null);
@@ -57,7 +57,7 @@ public class SudokuResolverTest {
 
     @Test
     public void testUnresolvableMatrix() {
-        Sudoku matrixToSoMatrix = Sudoku.load(Sample.almostResolved);
+        Sudoku matrixToSoMatrix = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix());
         matrixToSoMatrix.setValueAt(Value.SEVEN, Position.at(8,7));
         Optional<Sudoku> result = SudokuResolver.getInstance()
                 .resolve(matrixToSoMatrix);
