@@ -1,6 +1,7 @@
 package gry.sample.sudoku.aspects;
 
 import gry.sample.sudoku.matrix.Sudoku;
+import gry.sample.sudoku.matrix.Value;
 import gry.sample.sudoku.matrix.Position;
 import java.util.Optional;
 import gry.sample.sudoku.SudokuResolver;
@@ -23,12 +24,12 @@ public aspect RecursionLog {
 		&& call(Optional<Sudoku> SudokuResolver.resolve(Sudoku))
 		&& args(sudoku);
 	
-	pointcut matches(int value, Position at): if(false)
-		&& call(boolean Sudoku.isUnique(int, Position))
+	pointcut matches(Value value, Position at): if(ENABLED)
+		&& call(boolean Sudoku.isUnique(Value, Position))
 		&& args(value, at);
 	
-	pointcut setValueAt(int value, final Position at) : if(ENABLED) 
-		&& call(void Sudoku.setValueAt(int, Position))
+	pointcut setValueAt(Value value, final Position at) : if(ENABLED) 
+		&& call(void Sudoku.setValueAt(Value, Position))
 		&& args(value, at);
 		
 	// advices
@@ -50,20 +51,20 @@ public aspect RecursionLog {
 		recursionDepth--;
 	}
 
-	before(int value, Position at) : matches(value, at) {
-		System.out.print(String.format("%s\u2502  %d @ %s \u2192  ", getIndentStr(recursionDepth), value, at));		
+	before(Value value, Position at) : matches(value, at) {
+		System.out.print(String.format("%s\u2502  %d @ %s \u2192  ", getIndentStr(recursionDepth), value.toInt(), at));		
 	}
 
-	after(int value, Position at) returning (boolean ret): matches(value, at) {
-		System.out.println(ret ? "OK!" : "ambiguous!");
+	after(Value value, Position at) returning (boolean ret): matches(value, at) {
+		System.out.println(ret ? "\u263a" : "\u2a2f");
 	}
 	
-	before(int value, Position at) : setValueAt(value, at) {
-		if(value>0) {
-			System.out.println(String.format("%s\u2502  set %d \u2192 %s", getIndentStr(recursionDepth), value, at));				
-		}
-		else{
+	before(Value value, Position at) : setValueAt(value, at) {
+		if(value == Value.EMPTY) {
 			System.out.println(String.format("%s\u2502  reset %s", getIndentStr(recursionDepth), at));				
+		}
+		else {
+			System.out.println(String.format("%s\u2502  set %d \u2192 %s", getIndentStr(recursionDepth), value.toInt(), at));				
 		}
 	}
 	

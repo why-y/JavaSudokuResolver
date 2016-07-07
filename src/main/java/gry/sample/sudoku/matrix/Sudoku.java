@@ -54,6 +54,7 @@ public class Sudoku {
 
 	public List<Value> getMatchingValues(Position position) {
 		return Arrays.stream(Value.values())
+				.filter(value -> value != Value.EMPTY)
 				.filter(value -> isUnique(value, position))
 				.collect(Collectors.toList());
 	}
