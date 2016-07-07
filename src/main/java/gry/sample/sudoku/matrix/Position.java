@@ -36,11 +36,11 @@ public class Position implements Comparable<Position> {
 	}
 
 	private boolean isInLastRow(){
-		return row == Matrix.ROWS-1;
+		return row == Sudoku.ROWS-1;
 	}
 
 	private boolean isInLastColumn(){
-		return column == Matrix.COLUMNS-1;
+		return column == Sudoku.COLUMNS-1;
 	}
 
 	private int validated(int index) {
@@ -48,7 +48,7 @@ public class Position implements Comparable<Position> {
 			throw new IllegalArgumentException("Values for Position must be positive!");
 		}
 		// same limits for rows and columns
-		if(index > Matrix.ROWS-1) {
+		if(index > Sudoku.ROWS-1) {
 			throw new IndexOutOfBoundsException(String.format("Position value exceeded limit! Got:%d, allowded:0..8)", index));
 		}
 		return index;

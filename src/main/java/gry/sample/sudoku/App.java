@@ -1,6 +1,6 @@
 package gry.sample.sudoku;
 
-import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Sudoku;
 import gry.sample.sudoku.matrix.Sample;
 
 import java.time.Duration;
@@ -20,12 +20,12 @@ public class App
         System.out.println( "SUDOKU START:" );
         
 //        Matrix unresolved = Matrix.load(Sample.almostResolved);
-        Matrix unresolved = Matrix.load(Sample.intermediate2);
+        Sudoku unresolved = Sudoku.load(Sample.intermediate2);
 //        Matrix unresolved = Matrix.load(Sample.difficult2);
         System.out.println("INPUT:");
 		System.out.println(unresolved.toFormatedString());
 		
-        Optional<Matrix> resolved = SudokuResolver.getInstance().resolve(unresolved);
+        Optional<Sudoku> resolved = SudokuResolver.getInstance().resolve(unresolved);
         
         if(resolved.isPresent()) {
         	System.out.println("RESOLVED!");

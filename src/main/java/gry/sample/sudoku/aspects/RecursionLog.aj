@@ -1,6 +1,6 @@
 package gry.sample.sudoku.aspects;
 
-import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Sudoku;
 import gry.sample.sudoku.matrix.Position;
 import java.util.Optional;
 import gry.sample.sudoku.SudokuResolver;
@@ -19,29 +19,29 @@ public aspect RecursionLog {
 	private int recursionDepth = 0;
 	
 	// pointcuts
-	pointcut recursionCall(Matrix matrix) : if(ENABLED)
-		&& call(Optional<Matrix> SudokuResolver.resolve(Matrix))
-		&& args(matrix);
+	pointcut recursionCall(Sudoku sudoku) : if(ENABLED)
+		&& call(Optional<Sudoku> SudokuResolver.resolve(Sudoku))
+		&& args(sudoku);
 	
 	pointcut matches(int value, Position at): if(false)
-		&& call(boolean Matrix.isUnique(int, Position))
+		&& call(boolean Sudoku.isUnique(int, Position))
 		&& args(value, at);
 	
 	pointcut setValueAt(int value, final Position at) : if(ENABLED) 
-		&& call(void Matrix.setValueAt(int, Position))
+		&& call(void Sudoku.setValueAt(int, Position))
 		&& args(value, at);
 		
 	// advices
-	before(Matrix matrix) : recursionCall(matrix) {
+	before(Sudoku sudoku) : recursionCall(sudoku) {
 		callCounter++;
 		recursionDepth++;
 		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
-		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, matrix.streamUnresolvedPositions().count(), callCounter));
+		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, sudoku.streamUnresolvedPositions().count(), callCounter));
 	}
 	
-	after(Matrix matrix) : recursionCall(matrix) {
+	after(Sudoku sudoku) : recursionCall(sudoku) {
 		String exitSymbol = recursionDepth>1 ? "\u250c\u2518" : "\u2500\u2518";
-		if(matrix.streamUnresolvedPositions().count()==0) {
+		if(sudoku.streamUnresolvedPositions().count()==0) {
 			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(recursionDepth-1), exitSymbol));
 		}
 		else {

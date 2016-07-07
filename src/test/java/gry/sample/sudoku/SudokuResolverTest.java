@@ -1,6 +1,6 @@
 package gry.sample.sudoku;
 
-import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Sudoku;
 import gry.sample.sudoku.matrix.Position;
 import gry.sample.sudoku.matrix.Sample;
 import gry.sample.sudoku.matrix.Value;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
  */
 public class SudokuResolverTest {
 
-    private static final Matrix EXPECTED = Matrix.load(new int[][]{
+    private static final Sudoku EXPECTED = Sudoku.load(new int[][]{
             {3,6,5, 9,8,2, 4,7,1},
             {4,7,1, 3,6,5, 2,8,9},
             {8,2,9, 7,4,1, 6,3,5},
@@ -37,9 +37,9 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveSimpliest() {
-        Matrix matrixToSolve = Matrix.load(Sample.simpliest);
+        Sudoku matrixToSolve = Sudoku.load(Sample.simpliest);
 
-        Matrix result = SudokuResolver.getInstance()
+        Sudoku result = SudokuResolver.getInstance()
                 .resolve(matrixToSolve).orElse(null);
         assertThat(result, is(notNullValue()));
         assertThat(result, equalTo(EXPECTED));
@@ -47,9 +47,9 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveVerySimple() {
-        Matrix matrixToSolve = Matrix.load(Sample.almostResolved);
+        Sudoku matrixToSolve = Sudoku.load(Sample.almostResolved);
 
-        Matrix result = SudokuResolver.getInstance()
+        Sudoku result = SudokuResolver.getInstance()
                 .resolve(matrixToSolve).orElse(null);
         assertThat(result, is(notNullValue()));
         assertThat(result, equalTo(EXPECTED));
@@ -57,9 +57,9 @@ public class SudokuResolverTest {
 
     @Test
     public void testUnresolvableMatrix() {
-        Matrix matrixToSoMatrix = Matrix.load(Sample.almostResolved);
+        Sudoku matrixToSoMatrix = Sudoku.load(Sample.almostResolved);
         matrixToSoMatrix.setValueAt(Value.SEVEN, Position.at(8,7));
-        Optional<Matrix> result = SudokuResolver.getInstance()
+        Optional<Sudoku> result = SudokuResolver.getInstance()
                 .resolve(matrixToSoMatrix);
         assertThat(result.isPresent(), is(false));
     }

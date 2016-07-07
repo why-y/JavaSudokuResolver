@@ -1,6 +1,6 @@
 package gry.sample.sudoku;
 
-import gry.sample.sudoku.matrix.Matrix;
+import gry.sample.sudoku.matrix.Sudoku;
 import gry.sample.sudoku.matrix.Position;
 import gry.sample.sudoku.matrix.Value;
 
@@ -17,7 +17,7 @@ public class SudokuResolver {
         return theInstance;
     }
     
-    public Optional<Matrix> resolve(Matrix matrix) {
+    public Optional<Sudoku> resolve(Sudoku matrix) {
         Optional<Position> nextFreePosition = matrix.getNextUnresolvedPosition();
         if(!nextFreePosition.isPresent()) {
             return Optional.of(matrix);
@@ -25,9 +25,9 @@ public class SudokuResolver {
         Position position = nextFreePosition.get();
         List<Value> matchingValues = matrix.getMatchingValues(position);
         for (Value matchingValue : matchingValues) {
-            Matrix nextMatrix = matrix.clone();
+            Sudoku nextMatrix = matrix.clone();
             nextMatrix.setValueAt(matchingValue, position);
-            Optional<Matrix> result = resolve(nextMatrix);
+            Optional<Sudoku> result = resolve(nextMatrix);
             if(result.isPresent()) {
                 return result;
             }
