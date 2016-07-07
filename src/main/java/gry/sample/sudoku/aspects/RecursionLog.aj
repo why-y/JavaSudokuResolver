@@ -36,12 +36,12 @@ public aspect RecursionLog {
 		callCounter++;
 		recursionDepth++;
 		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
-		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, sudoku.streamUnresolvedPositions().count(), callCounter));
+		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, sudoku.unresolvedPositions().count(), callCounter));
 	}
 	
 	after(Sudoku sudoku) : recursionCall(sudoku) {
 		String exitSymbol = recursionDepth>1 ? "\u250c\u2518" : "\u2500\u2518";
-		if(sudoku.streamUnresolvedPositions().count()==0) {
+		if(sudoku.unresolvedPositions().count()==0) {
 			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(recursionDepth-1), exitSymbol));
 		}
 		else {

@@ -36,7 +36,6 @@ public class Grid {
 		validate(position);
 		return IntStream.range(0, numberOfRows).boxed()
 				.map(rowNumber -> Position.at(rowNumber, position.getColumn()));
-		
 	}
 	
 	public Stream<Position> positionsOfSameBlock(final Position position) {
@@ -68,6 +67,5 @@ public class Grid {
 			throw new IndexOutOfBoundsException(String.format("Invalid columnNo: %d! Expected is 0..%d", columnNo, numberOfColumns-1));
 		}
 	}
-	
 
 }

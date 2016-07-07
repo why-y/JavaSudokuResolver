@@ -17,15 +17,15 @@ public class SudokuResolver {
         return theInstance;
     }
     
-    public Optional<Sudoku> resolve(Sudoku matrix) {
-        Optional<Position> nextFreePosition = matrix.getNextUnresolvedPosition();
+    public Optional<Sudoku> resolve(Sudoku sudoku) {
+        Optional<Position> nextFreePosition = sudoku.getNextUnresolvedPosition();
         if(!nextFreePosition.isPresent()) {
-            return Optional.of(matrix);
+            return Optional.of(sudoku);
         }
         Position position = nextFreePosition.get();
-        List<Value> matchingValues = matrix.getMatchingValues(position);
+        List<Value> matchingValues = sudoku.getMatchingValues(position);
         for (Value matchingValue : matchingValues) {
-            Sudoku nextMatrix = matrix.clone();
+            Sudoku nextMatrix = sudoku.clone();
             nextMatrix.setValueAt(matchingValue, position);
             Optional<Sudoku> result = resolve(nextMatrix);
             if(result.isPresent()) {

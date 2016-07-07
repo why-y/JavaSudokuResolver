@@ -80,10 +80,10 @@ public class Sudoku {
 	}
 	
 	public Optional<Position> getNextUnresolvedPosition() {
-		return streamUnresolvedPositions().findFirst();
+		return unresolvedPositions().findFirst();
 	}
 
-	public Stream<Position> streamUnresolvedPositions() {
+	public Stream<Position> unresolvedPositions() {
 		return grid.allPositions().filter(pos -> valueMap.get(pos)==Value.EMPTY);
 	}
 
@@ -100,9 +100,9 @@ public class Sudoku {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		Sudoku matrix = (Sudoku) o;
+		Sudoku sudoku = (Sudoku) o;
 
-		return valueMap != null ? valueMap.equals(matrix.valueMap) : matrix.valueMap == null;
+		return valueMap != null ? valueMap.equals(sudoku.valueMap) : sudoku.valueMap == null;
 
 	}
 

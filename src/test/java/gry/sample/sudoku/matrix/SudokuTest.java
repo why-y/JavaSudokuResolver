@@ -41,7 +41,7 @@ public class SudokuTest {
     @Test
     public void testGetEachFreePosition() {
 		System.out.println(Sudoku.load(Sample.almostResolved).toString());
-    	List<Position> freePositions = Sudoku.load(Sample.almostResolved).streamUnresolvedPositions().collect(Collectors.toList());
+    	List<Position> freePositions = Sudoku.load(Sample.almostResolved).unresolvedPositions().collect(Collectors.toList());
     	assertThat(freePositions, equalTo(Arrays.asList(
     			Position.at(6,1), Position.at(6,4), Position.at(6,8),
     			Position.at(7,0), Position.at(7,1), Position.at(7,4), Position.at(7,5), Position.at(7,6),

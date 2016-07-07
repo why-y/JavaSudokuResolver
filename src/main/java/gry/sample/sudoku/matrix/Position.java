@@ -4,16 +4,24 @@ package gry.sample.sudoku.matrix;
  * Represents the Position within the sudoku [column, row]
  */
 public class Position implements Comparable<Position> {
-	int row;
+    int row;
 	int column; 
 	
 	private Position(int row, int column) {
-		this.row = validated(row);
-		this.column = validated(column);
+		this.row = row;
+		this.column = column;
 	}
 
 	static public Position at(Integer row, Integer column) {
+		validate(row);
+		validate(column);
 		return new Position(row, column);
+	}
+	
+	static private void validate(int index) {
+		if(index < 0) {
+			throw new IllegalArgumentException("Indexes for Positions must be positive!");
+		}
 	}
 
 	public int getRow() {
@@ -24,36 +32,6 @@ public class Position implements Comparable<Position> {
 		return column;
 	}
 	
-	public Position getNextPosition() {
-		if (isLastPosition()) return null;
-		return isInLastColumn() ? 
-				new Position(row + 1, 0) : // reset column to 0 and increment row
-				new Position(row, column+1);    // increment column and stay in the same row
-	}
-	
-	private boolean isLastPosition(){
-		return isInLastRow() && isInLastColumn();
-	}
-
-	private boolean isInLastRow(){
-		return row == Sudoku.ROWS-1;
-	}
-
-	private boolean isInLastColumn(){
-		return column == Sudoku.COLUMNS-1;
-	}
-
-	private int validated(int index) {
-		if(index < 0) {
-			throw new IllegalArgumentException("Values for Position must be positive!");
-		}
-		// same limits for rows and columns
-		if(index > Sudoku.ROWS-1) {
-			throw new IndexOutOfBoundsException(String.format("Position value exceeded limit! Got:%d, allowded:0..8)", index));
-		}
-		return index;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

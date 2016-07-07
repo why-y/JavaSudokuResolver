@@ -70,4 +70,8 @@ public class GridTest {
 		assertThat(blockPositions.contains(Position.at(5, 8)), is(true));
 	}
 	
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void getPositionsOfInvalidPosition() {
+		testee.positionsOfSameBlock(Position.at(0, 9));
+	}
 }

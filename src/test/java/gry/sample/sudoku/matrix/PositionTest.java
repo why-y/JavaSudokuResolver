@@ -33,14 +33,4 @@ public class PositionTest {
         Position.at(3,-1);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void rowOutOfBoundsTest() {
-        Position.at(9,8);
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void columnOutOfBoundsTest() {
-        Position.at(1,9);
-    }
-
 }
