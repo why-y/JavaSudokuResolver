@@ -1,12 +1,11 @@
 package gry.sample.sudoku;
 
-import gry.sample.sudoku.matrix.Sudoku;
-import gry.sample.sudoku.matrix.Sample;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.stream.Stream;
+
+import gry.sample.sudoku.matrix.Sample;
+import gry.sample.sudoku.matrix.Sudoku;
 
 /**
  * Test the SudokuResolver
@@ -14,50 +13,69 @@ import java.util.stream.Stream;
  */
 public class App 
 {
-
     public static void main( String[] args )
     {
+    	AppArgs arguments = AppArgs.load(args);
+    	Sudoku toResolve = Sudoku.load(arguments.getSample().getMatrix());
+
+    	Instant startInstant = startLog(toResolve);
     	
-    	Sample sample;
-    	try {
-    		sample = parseArguments(args);    		
-    	}
-    	catch(Throwable t) {
-    		System.err.println(String.format("You must provide exactly one argument!\n"
-    				+ "Supported values are:"));
-    		Stream.of(Sample.values()).forEach(s -> System.err.print(s.toString() + ", "));
-    		System.err.println(System.lineSeparator());
-    		return;
-    	}
-    	
-        Instant start = Instant.now();
-        System.out.println( "SUDOKU START:" );
-        
-        Sudoku unresolved = Sudoku.load(sample.getMatrix());
-        System.out.println("INPUT:");
-		System.out.println(unresolved.toFormatedString());
-		
 		// Setting all distinct values first (optional)
-		Sudoku sudoku = SudokuResolver.getInstance().recursivelySetDisctinctFields(unresolved);
+		if(arguments.doOptimize()) {
+			toResolve = SudokuResolver.getInstance().recursivelySetDisctinctFields(toResolve);			
+		}
 		
 		// Recursively resolve it:
-		Optional<Sudoku> resolved = sudoku.isResolved() ? Optional.of(sudoku) : SudokuResolver.getInstance().resolve(sudoku);			
+		Optional<Sudoku> resolved = toResolve.isResolved() ? Optional.of(toResolve) : SudokuResolver.getInstance().resolve(toResolve);			
         
-        if(resolved.isPresent()) {
+		endLog(startInstant, resolved);
+
+    }
+     
+    private static Instant startLog(final Sudoku sudoku) {
+        Instant start = Instant.now();
+        System.out.println( "SUDOKU START:" );
+        System.out.println("INPUT:");
+		System.out.println(sudoku.toFormatedString());
+		return start;
+    }
+    
+    private static void endLog(final Instant startInstant, final Optional<Sudoku> result) {
+        if(result.isPresent()) {
         	System.out.println("RESOLVED!");
-        	System.out.println(resolved.get().toFormatedString());
+        	System.out.println(result.get().toFormatedString());
         }
         else{
         	System.err.println("UNRESOLVABLE!!!");
         }
         Instant stop = Instant.now();
-        System.out.println(String.format("SUDOKU END  -> %s", Duration.between(start, stop)));
+        System.out.println(String.format("SUDOKU END  -> %s", Duration.between(startInstant, stop)));    	
     }
     
-    private static Sample parseArguments(String[] args) {
-    	if(args.length!=1) {
-    		throw new IllegalArgumentException();
-    	}
-   		return Sample.valueOf(args[0]);
-    }
+	private static class AppArgs{
+		private Sample sample;
+		private boolean doOptimize = false;
+		private AppArgs(){};
+		public static AppArgs load(String[] args){
+			AppArgs ret = new AppArgs();
+			if(args.length==1) {
+				ret.sample = Sample.valueOf(args[0]);
+			} else if (args.length==2) {
+				if(!args[0].toLowerCase().equals("-o"))
+					throw new IllegalArgumentException(String.format("Unknown option %s! Accepted is -o.", args[0]));
+				ret.doOptimize = true;
+				ret.sample = Sample.valueOf(args[1]);
+			} else {
+				throw new IllegalArgumentException("Must have one or two arguments");
+			}
+			return ret;
+		}
+		public Sample getSample() {
+			return sample;
+		}
+		public boolean doOptimize() {
+			return doOptimize;
+		}
+	}
+
 }
