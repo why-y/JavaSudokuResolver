@@ -17,8 +17,29 @@ public class SudokuResolver {
         return theInstance;
     }
     
-    public Optional<Sudoku> resolve(Sudoku sudoku) {
-        Optional<Position> nextFreePosition = sudoku.getNextUnresolvedPosition();
+    public Sudoku recursivelyResolveDisctinctFields(Sudoku sudoku) {
+    	long previousUnresolvedPositions = 81l;
+    	while(sudoku.unresolvedPositions().count() < previousUnresolvedPositions) {
+    		previousUnresolvedPositions = sudoku.unresolvedPositions().count();
+    		sudoku = resolveDistinctFields(sudoku);
+    	}
+    	return sudoku;
+    }
+    
+    private Sudoku resolveDistinctFields(final Sudoku sudoku) {
+    	Optional<Position> unresolvedPosition = sudoku.getFirstUnresolvedPosition();
+    	while(unresolvedPosition.isPresent()) {
+    		List<Value> values = sudoku.getMatchingValues(unresolvedPosition.get());
+    		if(values.size()==1) {
+    			sudoku.setValueAt(values.get(0), unresolvedPosition.get());
+    		}
+    		unresolvedPosition = sudoku.getNextUnresolvedPosition(unresolvedPosition.get());
+    	}
+		return sudoku;
+	}
+
+	public Optional<Sudoku> resolve(Sudoku sudoku) {
+        Optional<Position> nextFreePosition = sudoku.getFirstUnresolvedPosition();
         if(!nextFreePosition.isPresent()) {
         	// all Positions are solved! -> DONE!
             return Optional.of(sudoku);

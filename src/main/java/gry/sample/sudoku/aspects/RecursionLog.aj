@@ -16,6 +16,19 @@ public aspect RecursionLog {
 	// the algorithm.
 	private static boolean ENABLED = true;
 	
+	private static final char RIGHT_ARROW = '\u2192';
+	private static final char SMILEY = '\u263a';
+	private static final char CROSS = '\u2a2f';
+	private static final char DOT = '\u2022';
+	
+	private static final char UP_DOWN = '\u2502';
+	private static final char UP_RIGHT = '\u2514';
+	private static final char LEFT_RIGHT = '\u2500';
+	private static final char LEFT_DOWN = '\u2510';
+	private static final char LEFT_UP = '\u2518';
+	private static final char DOWN_RIGHT = '\u250c';
+	
+	
 	private int callCounter = 0;
 	private int recursionDepth = 0;
 	
@@ -24,7 +37,7 @@ public aspect RecursionLog {
 		&& call(Optional<Sudoku> SudokuResolver.resolve(Sudoku))
 		&& args(sudoku);
 	
-	pointcut matches(Value value, Position at): if(ENABLED)
+	pointcut matches(Value value, Position at): if(false)
 		&& call(boolean Sudoku.isUnique(Value, Position))
 		&& args(value, at);
 	
@@ -36,12 +49,12 @@ public aspect RecursionLog {
 	before(Sudoku sudoku) : recursionCall(sudoku) {
 		callCounter++;
 		recursionDepth++;
-		String enterSymbol = recursionDepth>1 ? "\u2514\u2510" : "\u2500\u2510";
+		String enterSymbol = new StringBuilder().append(recursionDepth>1 ? UP_RIGHT : LEFT_RIGHT).append(LEFT_DOWN).toString();
 		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, sudoku.unresolvedPositions().count(), callCounter));
 	}
 	
 	after(Sudoku sudoku) : recursionCall(sudoku) {
-		String exitSymbol = recursionDepth>1 ? "\u250c\u2518" : "\u2500\u2518";
+		String exitSymbol = new StringBuilder().append(recursionDepth>1 ? DOWN_RIGHT : LEFT_RIGHT).append(LEFT_UP).toString();
 		if(sudoku.unresolvedPositions().count()==0) {
 			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(recursionDepth-1), exitSymbol));
 		}
@@ -52,25 +65,25 @@ public aspect RecursionLog {
 	}
 
 	before(Value value, Position at) : matches(value, at) {
-		System.out.print(String.format("%s\u2502  %d @ %s \u2192  ", getIndentStr(recursionDepth), value.toInt(), at));		
+		System.out.print(String.format("%s%s  %d @ %s %s  ", getIndentStr(recursionDepth), UP_DOWN, value.toInt(), at, RIGHT_ARROW));		
 	}
 
 	after(Value value, Position at) returning (boolean ret): matches(value, at) {
-		System.out.println(ret ? "\u263a" : "\u2a2f");
+		System.out.println(ret ? SMILEY : CROSS);
 	}
 	
 	before(Value value, Position at) : setValueAt(value, at) {
 		if(value == Value.EMPTY) {
-			System.out.println(String.format("%s\u2502  reset %s", getIndentStr(recursionDepth), at));				
+			System.out.println(String.format("%s%s  reset %s", getIndentStr(recursionDepth), UP_DOWN, at));				
 		}
 		else {
-			System.out.println(String.format("%s\u2502  set %d \u2192 %s", getIndentStr(recursionDepth), value.toInt(), at));				
+			System.out.println(String.format("%s%s  set %d %s %s", getIndentStr(recursionDepth), UP_DOWN, value.toInt(), RIGHT_ARROW, at));				
 		}
 	}
 	
 	private String getIndentStr(int width) {
 		char[] indent = new char[width];
-		Arrays.fill(indent, '\u2022');
+		Arrays.fill(indent, DOT);
 		return new String(indent);
 	}
 }

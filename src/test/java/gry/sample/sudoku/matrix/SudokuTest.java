@@ -40,7 +40,6 @@ public class SudokuTest {
 
     @Test
     public void testGetEachFreePosition() {
-		System.out.println(Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix()).toString());
     	List<Position> freePositions = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix()).unresolvedPositions().collect(Collectors.toList());
     	assertThat(freePositions, equalTo(Arrays.asList(
     			Position.at(6,1), Position.at(6,4), Position.at(6,8),
@@ -50,8 +49,16 @@ public class SudokuTest {
     
     @Test
     public void testGetFirstFreePosition() {
-    	assertThat(Sudoku.load(Sample.SIMPLIEST.getMatrix()).getNextUnresolvedPosition(),
+    	assertThat(Sudoku.load(Sample.SIMPLIEST.getMatrix()).getFirstUnresolvedPosition(),
     			equalTo(Optional.of(Position.at(8,8))));
+    }
+    
+    @Test
+    public void testGetNextFreePosition() {
+    	assertThat(Sudoku.load(Sample.DIFFICULT1.getMatrix()).getNextUnresolvedPosition(Position.at(0, 0)),
+    			equalTo(Optional.of(Position.at(0, 1))));
+    	assertThat(Sudoku.load(Sample.DIFFICULT1.getMatrix()).getNextUnresolvedPosition(Position.at(0, 7)),
+    			equalTo(Optional.of(Position.at(1, 0))));
     }
     
     @Test

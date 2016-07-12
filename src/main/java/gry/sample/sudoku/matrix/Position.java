@@ -32,6 +32,10 @@ public class Position implements Comparable<Position> {
 		return column;
 	}
 	
+	public boolean isAfter(final Position otherPosition) {
+		return this.compareTo(otherPosition)>0;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -57,7 +61,7 @@ public class Position implements Comparable<Position> {
 	}
 
 	@Override
-	public int compareTo(Position other) {
+	public int compareTo(final Position other) {
 		return (this.getRow()*1000 + this.getColumn())
 				- (other.getRow()*1000 + other.getColumn());
 	}

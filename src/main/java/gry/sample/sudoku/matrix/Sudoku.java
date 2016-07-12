@@ -80,8 +80,12 @@ public class Sudoku {
 				.noneMatch(checkPos -> value == valueMap.get(checkPos));		
 	}
 	
-	public Optional<Position> getNextUnresolvedPosition() {
+	public Optional<Position> getFirstUnresolvedPosition() {
 		return unresolvedPositions().findFirst();
+	}
+
+	public Optional<Position> getNextUnresolvedPosition(Position startPosition) {
+		return unresolvedPositions().filter(position -> position.isAfter(startPosition)).findFirst();
 	}
 
 	public Stream<Position> unresolvedPositions() {

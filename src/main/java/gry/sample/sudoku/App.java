@@ -37,6 +37,11 @@ public class App
         System.out.println("INPUT:");
 		System.out.println(unresolved.toFormatedString());
 		
+		// Setting all distinct values first (optional)
+		unresolved = SudokuResolver.getInstance().recursivelyResolveDisctinctFields(unresolved);
+//		unresolved = SudokuResolver.getInstance().resolveDistinctFields(unresolved);
+		
+		// Recursively resolve it:
         Optional<Sudoku> resolved = SudokuResolver.getInstance().resolve(unresolved);
         
         if(resolved.isPresent()) {

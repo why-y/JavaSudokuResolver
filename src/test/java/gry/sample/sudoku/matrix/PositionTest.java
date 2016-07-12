@@ -22,6 +22,13 @@ public class PositionTest {
         assertThat(validPosition.getRow(), is(3));
         assertThat(validPosition.getColumn(), is(8));
     }
+    
+    @Test
+    public void positionIsAfterOtherPosition() {
+    	assertThat(Position.at(2, 0).isAfter(Position.at(1,  8)), is(true));
+    	assertThat(Position.at(4, 5).isAfter(Position.at(4, 5)), is(false));
+    	assertThat(Position.at(0, 0).isAfter(Position.at(8, 8)), is(false));
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void illegalNegativeRowTest() {

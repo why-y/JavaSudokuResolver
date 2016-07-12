@@ -4,9 +4,13 @@ import gry.sample.sudoku.matrix.Sudoku;
 import gry.sample.sudoku.matrix.Position;
 import gry.sample.sudoku.matrix.Sample;
 import gry.sample.sudoku.matrix.Value;
+
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -28,10 +32,16 @@ public class SudokuResolverTest {
             {6,5,2, 1,3,8, 9,4,7},
             {9,3,4, 5,7,6, 8,1,2},
             {1,8,7, 2,9,4, 5,6,3}});
+    
+    private SudokuResolver resolver;
 
+    @Before
+    public void initResolver() {
+    	resolver = SudokuResolver.getInstance();
+    }
+    
     @Test
     public void testGetInstance() {
-        SudokuResolver resolver = SudokuResolver.getInstance();
         assertThat(resolver, is(notNullValue()));
     }
 
@@ -39,7 +49,7 @@ public class SudokuResolverTest {
     public void testResolveSimpliest() {
         Sudoku matrixToSolve = Sudoku.load(Sample.SIMPLIEST.getMatrix());
 
-        Sudoku result = SudokuResolver.getInstance()
+        Sudoku result = resolver
                 .resolve(matrixToSolve).orElse(null);
         assertThat(result, is(notNullValue()));
         assertThat(result, equalTo(EXPECTED));
@@ -47,9 +57,9 @@ public class SudokuResolverTest {
 
     @Test
     public void testResolveVerySimple() {
-        Sudoku matrixToSolve = Sudoku.load(Sample.SIMPLIEST.getMatrix());
+        Sudoku matrixToSolve = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix());
 
-        Sudoku result = SudokuResolver.getInstance()
+        Sudoku result = resolver
                 .resolve(matrixToSolve).orElse(null);
         assertThat(result, is(notNullValue()));
         assertThat(result, equalTo(EXPECTED));
@@ -57,10 +67,20 @@ public class SudokuResolverTest {
 
     @Test
     public void testUnresolvableMatrix() {
-        Sudoku matrixToSoMatrix = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix());
-        matrixToSoMatrix.setValueAt(Value.SEVEN, Position.at(8,7));
-        Optional<Sudoku> result = SudokuResolver.getInstance()
-                .resolve(matrixToSoMatrix);
+        Sudoku matrixToSolve = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix());
+        matrixToSolve.setValueAt(Value.SEVEN, Position.at(8,7));
+        Optional<Sudoku> result = resolver
+                .resolve(matrixToSolve);
         assertThat(result.isPresent(), is(false));
     }
+        
+    @Test
+    public void testRecursivelyPrefillDistinctFields() {
+        Sudoku matrixToSolve = Sudoku.load(Sample.INTERMEDIATE1.getMatrix());
+        assertThat(matrixToSolve.unresolvedPositions().count(), is(51l));
+        Sudoku prefilledMatrix = resolver.recursivelyResolveDisctinctFields(matrixToSolve);
+        List<Position> unresolvedPositions = prefilledMatrix.unresolvedPositions().collect(Collectors.toList());
+        assertThat(unresolvedPositions.size(), is(0));
+    }
+    
 }
