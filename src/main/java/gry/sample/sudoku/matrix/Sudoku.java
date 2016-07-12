@@ -59,6 +59,10 @@ public class Sudoku {
 				.collect(Collectors.toList());
 	}
 
+	public boolean isResolved() {
+		return unresolvedPositions().count()==0L;
+	}
+	
 	boolean isUnique(Value value, final Position position) {
 		return isUniqueInRow(value, position) &&
 				isUniqueInColumn(value, position) &&

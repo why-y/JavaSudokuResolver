@@ -17,16 +17,16 @@ public class SudokuResolver {
         return theInstance;
     }
     
-    public Sudoku recursivelyResolveDisctinctFields(Sudoku sudoku) {
+    public Sudoku recursivelySetDisctinctFields(Sudoku sudoku) {
     	long previousUnresolvedPositions = 81l;
     	while(sudoku.unresolvedPositions().count() < previousUnresolvedPositions) {
     		previousUnresolvedPositions = sudoku.unresolvedPositions().count();
-    		sudoku = resolveDistinctFields(sudoku);
+    		sudoku = setDistinctFields(sudoku);
     	}
     	return sudoku;
     }
     
-    private Sudoku resolveDistinctFields(final Sudoku sudoku) {
+    private Sudoku setDistinctFields(final Sudoku sudoku) {
     	Optional<Position> unresolvedPosition = sudoku.getFirstUnresolvedPosition();
     	while(unresolvedPosition.isPresent()) {
     		List<Value> values = sudoku.getMatchingValues(unresolvedPosition.get());

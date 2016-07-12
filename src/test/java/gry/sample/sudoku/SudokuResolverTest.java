@@ -78,7 +78,7 @@ public class SudokuResolverTest {
     public void testRecursivelyPrefillDistinctFields() {
         Sudoku matrixToSolve = Sudoku.load(Sample.INTERMEDIATE1.getMatrix());
         assertThat(matrixToSolve.unresolvedPositions().count(), is(51l));
-        Sudoku prefilledMatrix = resolver.recursivelyResolveDisctinctFields(matrixToSolve);
+        Sudoku prefilledMatrix = resolver.recursivelySetDisctinctFields(matrixToSolve);
         List<Position> unresolvedPositions = prefilledMatrix.unresolvedPositions().collect(Collectors.toList());
         assertThat(unresolvedPositions.size(), is(0));
     }

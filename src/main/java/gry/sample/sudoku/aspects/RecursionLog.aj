@@ -29,12 +29,17 @@ public aspect RecursionLog {
 	private static final char DOWN_RIGHT = '\u250c';
 	
 	
-	private int callCounter = 0;
-	private int recursionDepth = 0;
+	private int recursionCounter = 0;
+	private int callStackDepth = 0;
+	private long openFields = 0;
 	
 	// pointcuts
 	pointcut recursionCall(Sudoku sudoku) : if(ENABLED)
 		&& call(Optional<Sudoku> SudokuResolver.resolve(Sudoku))
+		&& args(sudoku);
+	
+	pointcut setDistinctFieldsCall(Sudoku sudoku) : if(ENABLED)
+		&& call(Sudoku SudokuResolver.recursivelySetDisctinctFields(Sudoku))
 		&& args(sudoku);
 	
 	pointcut matches(Value value, Position at): if(false)
@@ -47,25 +52,44 @@ public aspect RecursionLog {
 		
 	// advices
 	before(Sudoku sudoku) : recursionCall(sudoku) {
-		callCounter++;
-		recursionDepth++;
-		String enterSymbol = new StringBuilder().append(recursionDepth>1 ? UP_RIGHT : LEFT_RIGHT).append(LEFT_DOWN).toString();
-		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", getIndentStr(recursionDepth-1), enterSymbol, sudoku.unresolvedPositions().count(), callCounter));
+		recursionCounter++;
+		callStackDepth++;
+		System.out.println(String.format("%s%s Resolve (%d open fields) #%d", 
+				getIndentStr(callStackDepth-1), 
+				getEnterSymbol(callStackDepth), 
+				sudoku.unresolvedPositions().count(), 
+				recursionCounter));
 	}
 	
 	after(Sudoku sudoku) : recursionCall(sudoku) {
-		String exitSymbol = new StringBuilder().append(recursionDepth>1 ? DOWN_RIGHT : LEFT_RIGHT).append(LEFT_UP).toString();
-		if(sudoku.unresolvedPositions().count()==0) {
-			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(recursionDepth-1), exitSymbol));
+		if(sudoku.isResolved()) {
+			System.out.println(String.format("%s%s DONE -> ALL FIELDS RESOLVED!", getIndentStr(callStackDepth-1), getExitSymbol(callStackDepth)));
 		}
 		else {
-			System.out.println(String.format("%s%s Roll back", getIndentStr(recursionDepth-1), exitSymbol));
+			System.out.println(String.format("%s%s Roll back", getIndentStr(callStackDepth-1), getExitSymbol(callStackDepth)));
 		}
-		recursionDepth--;
+		callStackDepth--;
 	}
 
+	before(Sudoku sudoku) : setDistinctFieldsCall(sudoku) {
+		callStackDepth++;
+		openFields = sudoku.unresolvedPositions().count();
+		System.out.println(String.format("%s%s Setting distinct fields", getIndentStr(callStackDepth-1), getEnterSymbol(callStackDepth)));
+	}
+	
+	after(Sudoku sudoku) : setDistinctFieldsCall(sudoku) {
+		long remainingFields = sudoku.unresolvedPositions().count();
+		System.out.println(String.format("%s%s %d of %d open fields could be distinctively filled. (i.e. %d fields remaining)", 
+				getIndentStr(callStackDepth-1), 
+				getExitSymbol(callStackDepth),
+				openFields-remainingFields,
+				openFields,
+				remainingFields));
+		callStackDepth--;	
+	}
+	
 	before(Value value, Position at) : matches(value, at) {
-		System.out.print(String.format("%s%s  %d @ %s %s  ", getIndentStr(recursionDepth), UP_DOWN, value.toInt(), at, RIGHT_ARROW));		
+		System.out.print(String.format("%s%s  %d @ %s %s  ", getIndentStr(callStackDepth), UP_DOWN, value.toInt(), at, RIGHT_ARROW));		
 	}
 
 	after(Value value, Position at) returning (boolean ret): matches(value, at) {
@@ -74,10 +98,10 @@ public aspect RecursionLog {
 	
 	before(Value value, Position at) : setValueAt(value, at) {
 		if(value == Value.EMPTY) {
-			System.out.println(String.format("%s%s  reset %s", getIndentStr(recursionDepth), UP_DOWN, at));				
+			System.out.println(String.format("%s%s  reset %s", getIndentStr(callStackDepth), UP_DOWN, at));				
 		}
 		else {
-			System.out.println(String.format("%s%s  set %d %s %s", getIndentStr(recursionDepth), UP_DOWN, value.toInt(), RIGHT_ARROW, at));				
+			System.out.println(String.format("%s%s  set %d %s %s", getIndentStr(callStackDepth), UP_DOWN, value.toInt(), RIGHT_ARROW, at));				
 		}
 	}
 	
@@ -85,5 +109,13 @@ public aspect RecursionLog {
 		char[] indent = new char[width];
 		Arrays.fill(indent, DOT);
 		return new String(indent);
+	}
+	
+	private String getEnterSymbol(int callStackDepth) {
+		return new StringBuilder().append(callStackDepth>1 ? UP_RIGHT : LEFT_RIGHT).append(LEFT_DOWN).toString();
+	}
+	
+	private String getExitSymbol(int callStackDepth) {
+		return new StringBuilder().append(callStackDepth>1 ? DOWN_RIGHT : LEFT_RIGHT).append(LEFT_UP).toString();
 	}
 }

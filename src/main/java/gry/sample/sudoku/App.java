@@ -38,11 +38,10 @@ public class App
 		System.out.println(unresolved.toFormatedString());
 		
 		// Setting all distinct values first (optional)
-		unresolved = SudokuResolver.getInstance().recursivelyResolveDisctinctFields(unresolved);
-//		unresolved = SudokuResolver.getInstance().resolveDistinctFields(unresolved);
+		Sudoku sudoku = SudokuResolver.getInstance().recursivelySetDisctinctFields(unresolved);
 		
 		// Recursively resolve it:
-        Optional<Sudoku> resolved = SudokuResolver.getInstance().resolve(unresolved);
+		Optional<Sudoku> resolved = sudoku.isResolved() ? Optional.of(sudoku) : SudokuResolver.getInstance().resolve(sudoku);			
         
         if(resolved.isPresent()) {
         	System.out.println("RESOLVED!");

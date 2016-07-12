@@ -76,4 +76,11 @@ public class SudokuTest {
 		assertThat(clone, not(equalTo(matrix)));
     }
     
+    @Test
+    public void testIsResolved() {
+		Sudoku matrix = Sudoku.load(Sample.SIMPLIEST.getMatrix());
+		assertThat(matrix.isResolved(), is(false));
+		matrix.setValueAt(Value.THREE, Position.at(8, 8));
+		assertThat(matrix.isResolved(), is(true));
+    }
 }
