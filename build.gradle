@@ -26,3 +26,10 @@ dependencies {
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.10'
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'gry.sample.sudoku.App'
+    }
+}
+
