@@ -1,125 +1,60 @@
 package gry.sample.sudoku;
 
-import java.util.stream.IntStream;
+import gry.sample.sudoku.matrix.Sudoku;
+import gry.sample.sudoku.matrix.Position;
+import gry.sample.sudoku.matrix.Value;
+
+import java.util.List;
+import java.util.Optional;
 
 public class SudokuResolver {
 
-	public static final int BLOCK_SIZE = 3;
+    private static SudokuResolver theInstance = new SudokuResolver();
 
-	public static final int ROWS = BLOCK_SIZE * 3; // each block has 3 rows
-	public static final int COLUMNS = ROWS; // the sudoku is always a square
-	
-	private int[][] matrix;
-	
-	public void init(int[][] unresolvedMatrix) {
-		matrix = unresolvedMatrix;
-	}
+    private SudokuResolver() {}
 
-	public boolean resolveIt() {
-		Position position = getFirstFreePosition();
-		if (position == null) {
-			return true;
-		}
-		return resolve(position);
-	}
-
-	/**
-	 * Recursive resolve method
-	 * @param position
-	 * @return
-     */
-	private boolean resolve(final Position position) {
-		for (int value=1; value<=9; ++value) {
-			if (isUnique(value, position)) {
-				setValueAt(value, position);
-				Position nextPosition = getNextFreePosition(position);
-				if(nextPosition == null || resolve(nextPosition)) {
-					return true;
-				}
-				else {
-					resetValueAt(position);
-				}
-			}
-		}
-		// no value matches on this position -> Roll back.
-		return false;
-	}
-	
-	private boolean isUnique(int value, final Position pos) {
-		return isUniqueInRow(value, pos.getY()) && 
-				isUniqueInColumn(value, pos.getX()) && 
-				isUniqueInBlock(value, pos);
-	}
-	
-	private boolean isUniqueInRow(int value, int row) {
-		return !IntStream.range(0, COLUMNS)
-				.anyMatch(i->value==matrix[row][i]);
-	}
-	
-	private boolean isUniqueInColumn(int value, int column) {
-		return !IntStream.range(0, ROWS)
-				.anyMatch(i->value==matrix[i][column]);
-	}
-	
-	private boolean isUniqueInBlock(int value, final Position position) {
-		Position blockPosition = getBlockPositionFor(position);
-		return IntStream.range(0, value)
-				.anyMatch(blockRow->isUniqueInBlockRow(value, blockPosition, blockRow));
-	}
-	
-	private boolean isUniqueInBlockRow(int value, final Position blockPosition, int blockRow) {
-		int row = blockPosition.getY()*BLOCK_SIZE + blockRow;
-		return !IntStream.range(0, BLOCK_SIZE)
-				.anyMatch(blockColumn->value==matrix[row][blockPosition.getX()*BLOCK_SIZE + blockColumn]);		
-	}
-	
-	private Position getBlockPositionFor(final Position position) {
-		return new Position(position.getX()/BLOCK_SIZE, position.getY()/BLOCK_SIZE);
-	}
-		
-	private Position getFirstFreePosition() {
-		Position firstPosition = new Position(0, 0);
-		return getValueAt(firstPosition)==0 ? firstPosition : getNextFreePosition(firstPosition);
+    public static final SudokuResolver getInstance() {
+        return theInstance;
+    }
+    
+    public Sudoku recursivelySetDisctinctFields(Sudoku sudoku) {
+    	long previousUnresolvedPositions = 81l;
+    	while(sudoku.unresolvedPositions().count() < previousUnresolvedPositions) {
+    		previousUnresolvedPositions = sudoku.unresolvedPositions().count();
+    		sudoku = setDistinctFields(sudoku);
+    	}
+    	return sudoku;
+    }
+    
+    private Sudoku setDistinctFields(final Sudoku sudoku) {
+    	Optional<Position> unresolvedPosition = sudoku.getFirstUnresolvedPosition();
+    	while(unresolvedPosition.isPresent()) {
+    		List<Value> values = sudoku.getMatchingValues(unresolvedPosition.get());
+    		if(values.size()==1) {
+    			sudoku.setValueAt(values.get(0), unresolvedPosition.get());
+    		}
+    		unresolvedPosition = sudoku.getNextUnresolvedPosition(unresolvedPosition.get());
+    	}
+		return sudoku;
 	}
 
-	/**
-	 * Returns the next Position in the matrix, which contains '0', or null if there isn't a '0' anymore (i.e. resolved).
-	 * @param position
-	 * @returns
-     */
-	private Position getNextFreePosition(final Position position) {
-		Position nextPosition = position;
-		while((nextPosition = nextPosition.increment()) != null && getValueAt(nextPosition)!=0) {};
-		return nextPosition;
-	}
-	
-	private int getValueAt(final Position position) {
-		return matrix[position.getY()][position.getX()];
-	}
-	
-	private void setValueAt(int val, final Position position) {
-		matrix[position.getY()][position.getX()] = val;
-	}
-	
-	private void resetValueAt(final Position position) {
-		setValueAt(0, position);
-	}
-
-	public String getMatrixAsNiceString() {
-		StringBuilder matrixStringBuilder = new StringBuilder();
-		IntStream.range(0, ROWS).forEach(y -> matrixStringBuilder
-				.append(getRowAsNiceString(y))
-				.append(System.lineSeparator())
-				.append(y % BLOCK_SIZE == 2 ? System.lineSeparator() : ""));
-		return matrixStringBuilder.toString();
-	}
-
-	private String getRowAsNiceString(int y) {
-		StringBuilder rowStringBuilder = new StringBuilder();
-		IntStream.range(0, COLUMNS).forEach(x -> rowStringBuilder
-				.append(matrix[y][x])
-				.append(x % BLOCK_SIZE == 2 ? "  " : " "));
-		return rowStringBuilder.toString();
-	}
+	public Optional<Sudoku> resolve(Sudoku sudoku) {
+        Optional<Position> nextFreePosition = sudoku.getFirstUnresolvedPosition();
+        if(!nextFreePosition.isPresent()) {
+        	// all Positions are solved! -> DONE!
+            return Optional.of(sudoku);
+        }
+        Position position = nextFreePosition.get();
+        List<Value> matchingValues = sudoku.getMatchingValues(position);
+        for (Value matchingValue : matchingValues) {
+            Sudoku nextMatrix = sudoku.clone();
+            nextMatrix.setValueAt(matchingValue, position);
+            Optional<Sudoku> result = resolve(nextMatrix);
+            if(result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
+    }
 
 }

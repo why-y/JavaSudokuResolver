@@ -1,51 +1,86 @@
 package gry.sample.sudoku;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
-import static org.hamcrest.CoreMatchers.*;
+import gry.sample.sudoku.matrix.Sudoku;
+import gry.sample.sudoku.matrix.Position;
+import gry.sample.sudoku.matrix.Sample;
+import gry.sample.sudoku.matrix.Value;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by gry on 10.06.16.
  */
 public class SudokuResolverTest {
 
-    private static int[][] testData = {
-            {0,0,0, 8,9,0, 0,0,0},
-            {0,6,9, 0,0,4, 3,2,0},
-            {8,2,0, 0,0,5, 4,0,7},
+    private static final Sudoku EXPECTED = Sudoku.load(new int[][]{
+            {3,6,5, 9,8,2, 4,7,1},
+            {4,7,1, 3,6,5, 2,8,9},
+            {8,2,9, 7,4,1, 6,3,5},
 
-            {3,0,0, 9,0,0, 1,0,2},
-            {0,4,0, 5,0,0, 0,7,0},
-            {0,0,0, 0,0,0, 5,3,0},
+            {5,1,8, 6,2,3, 7,9,4},
+            {7,4,3, 8,5,9, 1,2,6},
+            {2,9,6, 4,1,7, 3,5,8},
 
-            {7,1,0, 0,0,0, 0,0,0},
-            {6,0,0, 0,2,0, 8,0,0},
-            {0,8,4, 0,6,0, 0,1,0}
-    };
-    private static final String RESULT = new StringBuilder()
-            .append("1 3 2  8 9 6  7 5 4  ").append(System.lineSeparator())
-            .append("5 6 9  1 7 4  3 2 8  ").append(System.lineSeparator())
-            .append("8 2 3  6 1 5  4 9 7  ").append(System.lineSeparator())
-            .append(System.lineSeparator())
-            .append("3 5 6  9 4 7  1 8 2  ").append(System.lineSeparator())
-            .append("2 4 1  5 3 8  6 7 9  ").append(System.lineSeparator())
-            .append("4 9 7  2 8 1  5 3 6  ").append(System.lineSeparator())
-            .append(System.lineSeparator())
-            .append("7 1 8  4 5 2  9 6 3  ").append(System.lineSeparator())
-            .append("6 7 5  3 2 9  8 4 1  ").append(System.lineSeparator())
-            .append("9 8 4  7 6 3  2 1 5  ").append(System.lineSeparator())
-            .append(System.lineSeparator()).toString();
+            {6,5,2, 1,3,8, 9,4,7},
+            {9,3,4, 5,7,6, 8,1,2},
+            {1,8,7, 2,9,4, 5,6,3}});
+    
+    private SudokuResolver resolver;
 
+    @Before
+    public void initResolver() {
+    	resolver = SudokuResolver.getInstance();
+    }
+    
     @Test
-    public void testIt() throws Exception {
-        SudokuResolver testee = new SudokuResolver();
-        testee.init(testData);
-        testee.resolveIt();
-        String resultString = testee.getMatrixAsNiceString();
-        assertThat(resultString, equalTo(RESULT));
+    public void testGetInstance() {
+        assertThat(resolver, is(notNullValue()));
     }
 
+    @Test
+    public void testResolveSimpliest() {
+        Sudoku matrixToSolve = Sudoku.load(Sample.SIMPLIEST.getMatrix());
+
+        Sudoku result = resolver
+                .resolve(matrixToSolve).orElse(null);
+        assertThat(result, is(notNullValue()));
+        assertThat(result, equalTo(EXPECTED));
+    }
+
+    @Test
+    public void testResolveVerySimple() {
+        Sudoku matrixToSolve = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix());
+
+        Sudoku result = resolver
+                .resolve(matrixToSolve).orElse(null);
+        assertThat(result, is(notNullValue()));
+        assertThat(result, equalTo(EXPECTED));
+    }
+
+    @Test
+    public void testUnresolvableMatrix() {
+        Sudoku matrixToSolve = Sudoku.load(Sample.ALMOSTRESOLVED.getMatrix());
+        matrixToSolve.setValueAt(Value.SEVEN, Position.at(8,7));
+        Optional<Sudoku> result = resolver
+                .resolve(matrixToSolve);
+        assertThat(result.isPresent(), is(false));
+    }
+        
+    @Test
+    public void testRecursivelyPrefillDistinctFields() {
+        Sudoku matrixToSolve = Sudoku.load(Sample.INTERMEDIATE1.getMatrix());
+        assertThat(matrixToSolve.unresolvedPositions().count(), is(51l));
+        Sudoku prefilledMatrix = resolver.recursivelySetDisctinctFields(matrixToSolve);
+        List<Position> unresolvedPositions = prefilledMatrix.unresolvedPositions().collect(Collectors.toList());
+        assertThat(unresolvedPositions.size(), is(0));
+    }
+    
 }
