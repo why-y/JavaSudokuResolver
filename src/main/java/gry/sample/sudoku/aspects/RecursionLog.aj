@@ -6,6 +6,8 @@ import gry.sample.sudoku.matrix.Position;
 import java.util.Optional;
 import gry.sample.sudoku.SudokuResolver;
 
+import static gry.sample.sudoku.matrix.Value.*;
+
 import java.util.Arrays;
 
 public aspect RecursionLog {
@@ -97,7 +99,7 @@ public aspect RecursionLog {
 	}
 	
 	before(Value value, Position at) : setValueAt(value, at) {
-		if(value == Value.EMPTY) {
+		if(value == UNSET) {
 			System.out.println(String.format("%s%s  reset %s", getIndentStr(callStackDepth), UP_DOWN, at));				
 		}
 		else {

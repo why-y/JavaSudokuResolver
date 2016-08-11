@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static gry.sample.sudoku.matrix.Value.*;
+
 public class Sudoku {
 
 	static int ROWS = 9;
@@ -44,7 +46,7 @@ public class Sudoku {
 	public Optional<Value> getValueAt(final Position position) {
 		grid.validate(position);
 		Value value = valueMap.get(position);
-		return value!=Value.EMPTY ? Optional.of(value) : Optional.empty();
+		return value!=UNSET ? Optional.of(value) : Optional.empty();
 	}
 
 	public void setValueAt(Value value, final Position position) {
@@ -54,7 +56,7 @@ public class Sudoku {
 
 	public List<Value> getMatchingValues(Position position) {
 		return Arrays.stream(Value.values())
-				.filter(value -> value != Value.EMPTY)
+				.filter(value -> value != UNSET)
 				.filter(value -> isUnique(value, position))
 				.collect(Collectors.toList());
 	}
@@ -93,7 +95,7 @@ public class Sudoku {
 	}
 
 	public Stream<Position> unresolvedPositions() {
-		return grid.allPositions().filter(pos -> valueMap.get(pos)==Value.EMPTY);
+		return grid.allPositions().filter(pos -> valueMap.get(pos)==UNSET);
 	}
 
 	@Override

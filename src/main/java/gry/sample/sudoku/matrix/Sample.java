@@ -120,7 +120,7 @@ public enum Sample {
 		new int[]{0,0,0, 0,0,0, 0,0,0},
 	});
 	
-	public int[][] getMatrix() {
+	public int[][] asMatrix() {
 		return this.matrix;
 	}
 	

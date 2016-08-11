@@ -16,7 +16,7 @@ public class App
     public static void main( String[] args )
     {
     	AppArgs arguments = AppArgs.load(args);
-    	Sudoku toResolve = Sudoku.load(arguments.getSample().getMatrix());
+    	Sudoku toResolve = Sudoku.load(arguments.getSample().asMatrix());
 
     	Instant startInstant = startLog(toResolve);
     	

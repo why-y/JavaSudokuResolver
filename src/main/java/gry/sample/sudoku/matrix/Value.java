@@ -5,7 +5,7 @@ package gry.sample.sudoku.matrix;
  */
 public enum Value {
 
-    EMPTY(0), ONE(1), TWO(2), THREE(3), FOUR(4),
+    UNSET(0), ONE(1), TWO(2), THREE(3), FOUR(4),
     FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9);
 
     private int value;
@@ -20,7 +20,7 @@ public enum Value {
 
     static public Value fromInt(int value) {
         switch (value) {
-            case 0: return EMPTY;
+            case 0: return UNSET;
             case 1: return ONE;
             case 2: return TWO;
             case 3: return THREE;
