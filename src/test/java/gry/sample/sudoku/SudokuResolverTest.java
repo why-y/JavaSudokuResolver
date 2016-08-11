@@ -2,7 +2,6 @@ package gry.sample.sudoku;
 
 import gry.sample.sudoku.matrix.Sudoku;
 import gry.sample.sudoku.matrix.Position;
-import gry.sample.sudoku.matrix.Sample;
 
 import org.junit.Before;
 import org.junit.Test;
